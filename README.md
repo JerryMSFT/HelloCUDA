@@ -83,3 +83,49 @@
     ```
 
 Remember to stop or terminate your instances when not in use to avoid unnecessary charges.
+
+# Instructions to Clone and Compile CUDA Program
+
+1. Connect to your GPU-enabled VM (Azure or OCI) via SSH:
+   ```
+   ssh -i <path_to_private_key> username@<vm_public_ip>
+   ```
+
+2. Ensure Git is installed on your VM:
+   ```
+   sudo apt update
+   sudo apt install git
+   ```
+
+3. Clone your Git repository:
+   ```
+   git clone https://github.com/JerryMSFT/HelloCUDA
+   ```
+
+4. Navigate to the cloned repository:
+   ```
+   cd HelloCUDA
+   ```
+
+5. Locate your CUDA source file. Assuming it's named `cuda_comprehensive_test.cu`, compile it using nvcc:
+   ```
+   nvcc -o cuda_comprehensive_test cuda_comprehensive_test.cu
+   ```
+
+6. Run the compiled program:
+   ```
+   ./cuda_comprehensive_test
+   ```
+
+7. If you need to make changes to the code, edit the file using a text editor like nano:
+   ```
+   nano cuda_comprehensive_test.cu
+   ```
+   Make your changes, save (Ctrl+O, then Enter), and exit (Ctrl+X).
+
+8. After making changes, recompile the program (repeat step 5) and run it again.
+
+Troubleshooting:
+- If you encounter a "command not found" error for nvcc, ensure CUDA is properly installed and the PATH is set correctly.
+- If you face compilation errors, double-check that your CUDA installation matches the version expected by your code.
+- For runtime errors, verify that your GPU drivers are correctly installed using `nvidia-smi`.
