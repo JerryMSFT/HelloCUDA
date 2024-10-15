@@ -1,113 +1,85 @@
-# HelloCUDA
-Hello World in CUDA
+# Setting up GPU-enabled VMs for CUDA Development
 
-Certainly! Setting up a CUDA environment on a Linux machine in Azure is a great way to work with CUDA. Here's a step-by-step guide to get you started:
+## Azure GPU VM Setup
 
-1. Create an Azure VM with GPU support:
-   - Log into the Azure portal (portal.azure.com)
-   - Create a new Virtual Machine
-   - Choose a Linux distribution (Ubuntu is a popular choice)
-   - Select a VM size that includes NVIDIA GPUs (look for N-series VMs)
-   - Set up authentication and networking as needed
+1. Log in to the Azure portal (portal.azure.com)
 
-2. Connect to your VM:
-   - Use SSH to connect to your VM from your local machine
+2. Click on "Create a resource" and search for "Virtual machine"
 
-3. Update the system:
-```bash
-sudo apt update && sudo apt upgrade -y
-```
+3. Click "Create" under "Virtual machine"
 
-4. Install necessary tools:
-```bash
-sudo apt install build-essential
-```
+4. Choose your subscription and resource group (create a new one if needed)
 
-5. Install NVIDIA GPU drivers:
-```bash
-sudo apt install linux-headers-$(uname -r)
-sudo apt install nvidia-driver-xxx  # replace xxx with the latest version number
-```
+5. Name your VM and choose a region
 
-6. Reboot the VM:
-```bash
-sudo reboot
-```
+6. For Image, select a Linux distribution (e.g., Ubuntu Server 20.04 LTS)
 
-7. Verify GPU driver installation:
-```bash
-nvidia-smi
-```
+7. For Size, click "See all sizes" and filter for GPU. Choose an NC-series VM (e.g., NC6s_v3)
 
-8. Install CUDA Toolkit:
-   - Go to NVIDIA's CUDA Toolkit Archive: https://developer.nvidia.com/cuda-toolkit-archive
-   - Choose the version you want (latest is usually best)
-   - Follow the installation instructions for your chosen Linux distribution
+8. Set up authentication (SSH public key recommended)
 
-   For example, for CUDA 11.8 on Ubuntu 20.04:
+9. In Networking, allow SSH (port 22) inbound
 
-```bash
-wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
-sudo sh cuda_11.8.0_520.61.05_linux.run
-```
+10. Review and create the VM
 
-9. Set up environment variables:
-   Add these lines to your ~/.bashrc file:
+11. Once deployed, find the public IP address in the VM overview
 
-```bash
-export PATH=/usr/local/cuda-11.8/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
-```
+12. SSH into your VM:
+    ```
+    ssh -i <path_to_private_key> azureuser@<vm_public_ip>
+    ```
 
-   Then, source the file:
-```bash
-source ~/.bashrc
-```
+13. Follow the CUDA setup instructions provided earlier to install NVIDIA drivers and CUDA toolkit
 
-10. Verify CUDA installation:
-```bash
-nvcc --version
-```
+## Oracle Cloud Infrastructure (OCI) GPU VM Setup
 
-Now that you have CUDA set up, let's create a simple CUDA program to test the environment:
+1. Log in to the OCI Console (cloud.oracle.com)
 
+2. Open the navigation menu and click "Compute" > "Instances"
 
+3. Click "Create Instance"
 
-```cuda
-#include <stdio.h>
+4. Name your instance
 
-__global__ void cuda_hello(){
-    printf("Hello World from GPU!\n");
-}
+5. For Image, choose a GPU-compatible OS (e.g., Oracle Linux 7.9 or Ubuntu 20.04)
 
-int main() {
-    cuda_hello<<<1,1>>>();
-    cudaDeviceSynchronize();
-    return 0;
-}
+6. For Shape, click "Change shape"
+   - Select "GPU" from the menu
+   - Choose a GPU shape (e.g., VM.GPU2.1)
 
-```
+7. In Network, create a new VCN or use an existing one
+   - Ensure a public subnet is selected
+   - Select "Assign a public IPv4 address"
 
-Save this code in a file named `cuda_test.cu`.
+8. Add your SSH key (upload or paste public key)
 
-11. Compile and run the test program:
-```bash
-nvcc cuda_test.cu -o cuda_test
-./cuda_test
-```
+9. Click "Create" to launch the instance
 
-If everything is set up correctly, you should see the output: "Hello World from GPU!"
+10. Once the instance is running, find the public IP address
 
-12. For development, you might want to install an IDE. Visual Studio Code is a popular choice:
-```bash
-sudo snap install --classic code
-```
+11. SSH into your instance:
+    ```
+    ssh -i <path_to_private_key> opc@<instance_public_ip>
+    ```
 
-13. Install CUDA development tools:
-```bash
-sudo apt install nvidia-cuda-toolkit
-```
+12. Install CUDA:
+    - For Oracle Linux:
+      ```
+      sudo yum-config-manager --add-repo http://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
+      sudo yum clean all
+      sudo yum -y install nvidia-driver-latest-dkms cuda
+      ```
+    - For Ubuntu, follow the CUDA setup instructions provided earlier
 
-This setup provides you with a full CUDA development environment on an Azure Linux VM. You can now start developing and running CUDA programs.
+13. Reboot the instance:
+    ```
+    sudo reboot
+    ```
 
-Would you like me to explain any part of this process in more detail, or provide a more complex CUDA example to test your setup?
+14. After reboot, verify the CUDA installation:
+    ```
+    nvidia-smi
+    nvcc --version
+    ```
+
+Remember to stop or terminate your instances when not in use to avoid unnecessary charges.
